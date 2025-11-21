@@ -127,6 +127,66 @@ public class SupabaseRepository {
         }
     }
 
+    public <T> List<T> findAllWithFilter(String tableName, String filter, String order, Class<T> clazz) throws Exception {
+        String url = supabaseProperties.getUrl() + "/rest/v1/" + tableName + "?" + filter + "&order=" + order;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("apikey", supabaseProperties.getServiceRoleKey());
+        headers.set("Authorization", "Bearer " + supabaseProperties.getServiceRoleKey());
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                JsonNode root = objectMapper.readTree(response.getBody());
+                List<T> result = new ArrayList<>();
+                
+                for (JsonNode node : root) {
+                    T item = convertJsonNodeToObject(node, clazz);
+                    if (item != null) {
+                        result.add(item);
+                    }
+                }
+                return result;
+            } else {
+                throw new RuntimeException("Find with filter failed: " + response.getBody());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Find with filter error: " + e.getMessage(), e);
+        }
+    }
+
+    public <T> List<T> findAllWithFilterAndRange(String tableName, String filter, String order, String range, Class<T> clazz) throws Exception {
+        String url = supabaseProperties.getUrl() + "/rest/v1/" + tableName + "?" + filter + "&order=" + order + "&range=" + range;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("apikey", supabaseProperties.getServiceRoleKey());
+        headers.set("Authorization", "Bearer " + supabaseProperties.getServiceRoleKey());
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                JsonNode root = objectMapper.readTree(response.getBody());
+                List<T> result = new ArrayList<>();
+                
+                for (JsonNode node : root) {
+                    T item = convertJsonNodeToObject(node, clazz);
+                    if (item != null) {
+                        result.add(item);
+                    }
+                }
+                return result;
+            } else {
+                throw new RuntimeException("Find with filter and range failed: " + response.getBody());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Find with filter and range error: " + e.getMessage(), e);
+        }
+    }
+
     private <T> T convertJsonNodeToObject(JsonNode node, Class<T> clazz) {
         try {
             Map<String, Object> result = new HashMap<>();
@@ -141,7 +201,9 @@ public class SupabaseRepository {
                     }
                 } else if (key.equals("id") || key.equals("user_id")) {
                     result.put(key, value.asText());
-                } else if (key.equals("title") || key.equals("summary") || key.equals("full_name") || key.equals("role") || key.equals("country")) {
+                } else if (key.equals("title") || key.equals("summary") || key.equals("full_name") || key.equals("role") || key.equals("country") || key.equals("content") || key.equals("category")) {
+                    result.put(key, value.asText());
+                } else if (key.equals("status")) {
                     result.put(key, value.asText());
                 } else {
                     result.put(key, value.asText());
