@@ -25,14 +25,5 @@ public class RootController {
         );
     }
 
-    @GetMapping("/health")
-    public Map<String, Object> health() {
-        return Map.of(
-            "status", "healthy",
-            "service", "HotCash Backend",
-            "timestamp", LocalDateTime.now().toString(),
-            "database", "connected",
-            "version", "1.0.0"
-        );
-    }
+    // Health endpoint removido - ya existe en RailwayHealthController
 }

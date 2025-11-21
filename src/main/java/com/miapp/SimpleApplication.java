@@ -29,13 +29,7 @@ public class SimpleApplication {
         }
     }
     
-    @GetMapping("/")
-    public String home() {
-        return "✅ BACKEND RENDER FUNCIONANDO - BACK READY FOR RENDER";
-    }
+    // Root endpoint removido - ya existe en RailwayHealthController
     
-    @GetMapping("/health")
-    public String health() {
-        return "{\"status\":\"UP\",\"message\":\"BACK READY FOR RENDER\"}";
-    }
+    // Health endpoint removido - ya existe en RailwayHealthController
 }
