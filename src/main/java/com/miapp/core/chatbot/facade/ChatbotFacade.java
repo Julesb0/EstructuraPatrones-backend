@@ -16,8 +16,8 @@ import java.util.List;
 /**
  * Implementación del patrón Facade
  * Proporciona una interfaz simplificada para toda la funcionalidad del chatbot
+ * Configurado manualmente en NlpClientConfig
  */
-@Component
 public class ChatbotFacade {
 
     private final ChatMessageRepository chatMessageRepository;
@@ -28,11 +28,11 @@ public class ChatbotFacade {
     @Autowired
     public ChatbotFacade(ChatMessageRepository chatMessageRepository,
                         AnswerStrategyFactory strategyFactory,
-                        NlpClient nlpClient,
+                        NlpClient loggingNlpClient,
                         CategoryDetector categoryDetector) {
         this.chatMessageRepository = chatMessageRepository;
         this.strategyFactory = strategyFactory;
-        this.nlpClient = new LoggingNlpClient(nlpClient); // Aplicar el patrón Decorator
+        this.nlpClient = loggingNlpClient; // El cliente ya viene configurado con logging
         this.categoryDetector = categoryDetector;
     }
 

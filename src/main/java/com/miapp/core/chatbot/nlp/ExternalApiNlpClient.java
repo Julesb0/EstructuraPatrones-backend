@@ -13,8 +13,8 @@ import java.util.Map;
 /**
  * Implementación concreta del patrón Adapter/Bridge
  * Adapta la API externa de OpenAI al contrato NlpClient
+ * Nota: No usar @Component aquí, se configura manualmente en NlpClientConfig
  */
-@Component
 public class ExternalApiNlpClient implements NlpClient {
 
     private final RestTemplate restTemplate;
@@ -23,16 +23,16 @@ public class ExternalApiNlpClient implements NlpClient {
 
     public ExternalApiNlpClient() {
         this.restTemplate = new RestTemplate();
-        Dotenv dotenv = Dotenv.load();
-        this.openAiApiKey = dotenv.get("OPENAI_API_KEY");
+        // Intentar obtener la API key de las variables de entorno
+        this.openAiApiKey = System.getenv("OPENAI_API_KEY");
     }
 
     @Override
     public String ask(String prompt) throws NlpException {
         try {
-            // Si no hay API key, usar respuesta dummy para desarrollo
+            // Si no hay API key, lanzar excepción para que el FallbackNlpClient maneje
             if (openAiApiKey == null || openAiApiKey.isEmpty()) {
-                return generateDummyResponse(prompt);
+                throw new NlpException("OPENAI_API_KEY no configurada");
             }
 
             HttpHeaders headers = new HttpHeaders();
@@ -72,16 +72,5 @@ public class ExternalApiNlpClient implements NlpClient {
         return "ExternalApiNlpClient (OpenAI GPT-3.5)";
     }
 
-    /**
-     * Genera respuestas dummy para desarrollo cuando no hay API key configurada
-     */
-    private String generateDummyResponse(String prompt) {
-        if (prompt.toLowerCase().contains("hola") || prompt.toLowerCase().contains("buenos")) {
-            return "¡Hola! Soy tu asistente emprendedor. Estoy aquí para ayudarte con temas legales, financieros y de marketing. ¿En qué puedo asistirte hoy?";
-        } else if (prompt.length() < 20) {
-            return "Gracias por tu mensaje. Como asistente para emprendedores, puedo ayudarte con temas legales, financieros y de marketing. ¿Podrías darme más detalles sobre tu consulta?";
-        } else {
-            return "Entiendo tu consulta. Como asistente emprendedor, te sugiero que analices bien tu situación actual y consideres buscar asesoramiento especializado si es un tema complejo. ¿Hay algo más específico sobre lo que necesitas orientación?";
-        }
-    }
+
 }
