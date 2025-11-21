@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 /**
  * Entidad BusinessPlan con todos los campos necesarios para el CRUD
  * Incluye status para tracking de estado del plan de negocio
- * Última actualización: FORZAR REBUILD EN RAILWAY - VERSIÓN 2.1
+ * Última actualización: FORZAR REBUILD EN RENDER - VERSIÓN 2.2
  * Fecha: 2025-11-21 19:30 - Cambio forzado para redeploy
  */
 public class BusinessPlan {
