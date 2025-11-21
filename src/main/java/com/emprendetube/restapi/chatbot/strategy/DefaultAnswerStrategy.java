@@ -14,7 +14,7 @@ public class DefaultAnswerStrategy implements AnswerStrategy {
     @Override
     public String generateAnswer(String userMessage) {
         // Respuestas genéricas para temas no categorizados
-        return "Gracias por tu pregunta. Como asistente para emprendedores, puedo ayudarte con temas de:")
+        return "Gracias por tu pregunta. Como asistente para emprendedores, puedo ayudarte con temas de:"
                 + "\n\n• LEGALES: Contratos, registros de empresa, propiedad intelectual"
                 + "\n• FINANZAS: Presupuestos, inversiones, flujo de caja, financiamiento"
                 + "\n• MARKETING: Redes sociales, SEO, publicidad, contenido"

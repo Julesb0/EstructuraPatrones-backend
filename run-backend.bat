@@ -1,0 +1,19 @@
+@echo off
+echo Iniciando backend HotCash...
+
+REM Establecer variables de entorno
+set SUPABASE_URL=https://jmumjdejdhncycnxgkom.supabase.co
+set SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImptdW1qZGVqZGhuY3ljbnhna29tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2NDY0NzksImV4cCI6MjA3OTIyMjQ3OX0.Co1vLYDB8zFNT420HBc8Deqb7i9kzuznfRuIiYBwa14
+set SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImptdW1qZGVqZGhuY3ljbnhna29tIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MzY0NjQ3OSwiZXhwIjoyMDc5MjIyNDc5fQ.2cVSvlJTD7FNkK9tSeEWhE82WEZgU6m1-3nx61OTFg0
+set SUPABASE_DB_URL=jdbc:postgresql://db.jmumjdejdhncycnxgkom.supabase.co:5432/postgres
+set SUPABASE_USER=postgres
+set SUPABASE_PASSWORD=YDSbBYDMOfS19mtU
+set JWT_SECRET=xZpmvBNQVl1yagtr3wkGuDbDdiJ3LpTyW+LrThZ/j3UdIdPWPnkid4tjmBVjH7y1EMu7QH55zP/fCwnvR2lFuA==
+set CORS_ORIGINS=http://localhost:3000,https://estructurapatrones-frontend.vercel.app
+set PORT=8080
+
+REM Ejecutar Spring Boot con las clases compiladas
+echo Ejecutando Spring Boot...
+java -cp "target/classes;target/dependency/*" com.emprendetube.restapi.Application
+
+pause

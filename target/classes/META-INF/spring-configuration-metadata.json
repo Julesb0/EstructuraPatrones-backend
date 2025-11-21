@@ -25,7 +25,8 @@
     {
       "name": "jwt.exp-minutes",
       "type": "java.lang.Integer",
-      "sourceType": "com.miapp.auth.config.JwtProperties"
+      "sourceType": "com.miapp.auth.config.JwtProperties",
+      "defaultValue": 0
     },
     {
       "name": "jwt.secret",
@@ -50,7 +51,8 @@
     {
       "name": "recaptcha.fail-on-error",
       "type": "java.lang.Boolean",
-      "sourceType": "com.miapp.auth.config.RecaptchaProperties"
+      "sourceType": "com.miapp.auth.config.RecaptchaProperties",
+      "defaultValue": true
     },
     {
       "name": "recaptcha.secret-key",
@@ -60,12 +62,14 @@
     {
       "name": "recaptcha.timeout",
       "type": "java.lang.Integer",
-      "sourceType": "com.miapp.auth.config.RecaptchaProperties"
+      "sourceType": "com.miapp.auth.config.RecaptchaProperties",
+      "defaultValue": 5000
     },
     {
       "name": "recaptcha.verify-url",
       "type": "java.lang.String",
-      "sourceType": "com.miapp.auth.config.RecaptchaProperties"
+      "sourceType": "com.miapp.auth.config.RecaptchaProperties",
+      "defaultValue": "https:\/\/www.google.com\/recaptcha\/api\/siteverify"
     },
     {
       "name": "supabase.anon-key",
