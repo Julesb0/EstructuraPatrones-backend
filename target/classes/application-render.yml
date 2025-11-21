@@ -1,57 +1,43 @@
-# Configuración para Render
+# Configuración mínima para Render - BACK READY FOR RENDER
+server:
+  port: ${PORT:8080}
+
 spring:
   application:
-    name: estructurapatrones-backend
-  
-  # Configuración del servidor
-  server:
-    port: ${PORT:8080}
-    
-  # Configuración de CORS para producción
-  cors:
-    allowed-origins: 
-      - "http://localhost:3000"
-      - "http://localhost:5173"
-      - "https://estructurapatrones-frontend.vercel.app"
-      - "https://estructurapatrones.onrender.com"
-    allowed-methods: GET, POST, PUT, DELETE, OPTIONS
-    allowed-headers: "*"
-    allow-credentials: true
-    max-age: 3600
+    name: entrepreneur-platform
+  main:
+    banner-mode: off
+    lazy-initialization: true
 
-# Configuración de Supabase
+# Configuración básica de Supabase
 supabase:
-  url: ${SUPABASE_URL}
-  service-role-key: ${SUPABASE_SERVICE_ROLE_KEY}
-  jwt-secret: ${SUPABASE_JWT_SECRET}
+  url: ${SUPABASE_URL:}
+  anonKey: ${SUPABASE_ANON_KEY:}
+  serviceRoleKey: ${SUPABASE_SERVICE_ROLE_KEY:}
 
-# Configuración de JWT
+# Configuración básica de JWT
 jwt:
-  secret: ${JWT_SECRET}
-  expiration: ${JWT_EXPIRATION:86400000}
+  secret: ${JWT_SECRET:default-secret-key-change-in-production}
+  expMinutes: 60
 
-# Configuración de reCAPTCHA
-recaptcha:
-  secret-key: ${RECAPTCHA_SECRET_KEY}
-
-# Configuración de tablas
+# Configuración básica de la plataforma
 platform:
   tables:
-    profiles: ${PLATFORM_TABLES_PROFILES:profiles}
-    business-plans: ${PLATFORM_TABLES_BUSINESS_PLANS:business_plans}
-    chat-messages: ${PLATFORM_TABLES_CHAT_MESSAGES:chat_messages}
-  user-column: ${PLATFORM_USER_COLUMN:user_id}
+    profiles: profiles
+    businessPlans: business_plans
+    userColumn: user_id
 
-# Configuración de logging
+# Configuración básica de recaptcha (modo desarrollo)
+recaptcha:
+  secretKey: ${RECAPTCHA_SECRET_KEY:}
+  verifyUrl: https://www.google.com/recaptcha/api/siteverify
+  timeout: 5000
+  failOnError: false
+
+# Logging mínimo
 logging:
   level:
+    root: INFO
     com.miapp: INFO
-    org.springframework.web: INFO
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
-    
-# Configuración de debug para producción
-debug: false
-
-# Perfil activo
-spring.profiles.active: ${SPRING_PROFILES_ACTIVE:production}
+    console: "%d{HH:mm:ss} - %msg%n"

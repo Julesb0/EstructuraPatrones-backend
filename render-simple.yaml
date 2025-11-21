@@ -1,0 +1,21 @@
+# Configuración de emergencia para Render - BACK READY FOR RENDER
+services:
+  - type: web
+    name: estructurapatrones-backend
+    env: docker
+    dockerfilePath: ./Dockerfile.simple
+    buildCommand: "mvn clean package -DskipTests"
+    startCommand: "java -Dspring.profiles.active=render -jar target/*.jar"
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY  
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: PORT
+        value: 8080
+      - key: SPRING_PROFILES_ACTIVE
+        value: "render"
