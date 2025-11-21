@@ -7,16 +7,18 @@ public class BusinessPlan {
     private String userId;
     private String title;
     private String summary;
+    private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public BusinessPlan() {}
 
-    public BusinessPlan(String id, String userId, String title, String summary, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public BusinessPlan(String id, String userId, String title, String summary, String status, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.userId = userId;
         this.title = title;
         this.summary = summary;
+        this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }

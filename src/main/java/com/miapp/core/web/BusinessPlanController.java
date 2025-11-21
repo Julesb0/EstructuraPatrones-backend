@@ -29,6 +29,7 @@ public class BusinessPlanController {
                     plan.getId(),
                     plan.getTitle(),
                     plan.getSummary(),
+                    plan.getStatus(),
                     plan.getCreatedAt(),
                     plan.getUpdatedAt()
                 ))
@@ -52,6 +53,7 @@ public class BusinessPlanController {
                 plan.getId(),
                 plan.getTitle(),
                 plan.getSummary(),
+                plan.getStatus(),
                 plan.getCreatedAt(),
                 plan.getUpdatedAt()
             );

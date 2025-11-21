@@ -21,4 +21,12 @@ public class BusinessPlanFacade {
     public BusinessPlan createBusinessPlan(String userId, String title, String summary) throws Exception {
         return businessPlanService.createBusinessPlan(userId, title, summary);
     }
+
+    public BusinessPlan updateBusinessPlan(String userId, String planId, String title, String summary) throws Exception {
+        return businessPlanService.updateBusinessPlan(userId, planId, title, summary);
+    }
+
+    public void deleteBusinessPlan(String userId, String planId) throws Exception {
+        businessPlanService.deleteBusinessPlan(userId, planId);
+    }
 }

@@ -80,7 +80,16 @@ public class AuthController {
     @PostMapping("/social-login")
     public ResponseEntity<AuthResponse> socialLogin(@RequestBody SocialLoginRequest request) {
         try {
-            logger.info("Social login attempt with provider: {} for email: {}", request.getProvider(), request.getEmail());
+            // Solo permitir Google como proveedor social
+            if (!"google".equalsIgnoreCase(request.getProvider())) {
+                logger.warn("Provider not allowed: {}. Only Google is supported.", request.getProvider());
+                AuthResponse errorResponse = new AuthResponse();
+                errorResponse.setToken("");
+                errorResponse.setUsername("Proveedor no soportado. Solo Google está disponible.");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+            
+            logger.info("Google login attempt for email: {}", request.getEmail());
             
             AuthResponse response = authFacade.socialLogin(
                 request.getAccessToken(), 

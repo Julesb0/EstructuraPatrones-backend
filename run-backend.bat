@@ -14,6 +14,6 @@ set PORT=8080
 
 REM Ejecutar Spring Boot con las clases compiladas
 echo Ejecutando Spring Boot...
-java -cp "target/classes;target/dependency/*" com.emprendetube.restapi.Application
+java -cp "target/classes;target/dependency/*" com.miapp.Application
 
 pause

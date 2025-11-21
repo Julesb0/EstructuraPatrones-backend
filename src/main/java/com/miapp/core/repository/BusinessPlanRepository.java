@@ -28,4 +28,8 @@ public class BusinessPlanRepository {
     public BusinessPlan save(BusinessPlan businessPlan) throws Exception {
         return supabaseRepository.save(tablesProperties.getBusinessPlans(), businessPlan, BusinessPlan.class);
     }
+
+    public void deleteById(String id) throws Exception {
+        supabaseRepository.deleteById(tablesProperties.getBusinessPlans(), id);
+    }
 }

@@ -6,15 +6,17 @@ public class BusinessPlanResponse {
     private String id;
     private String title;
     private String summary;
+    private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public BusinessPlanResponse() {}
 
-    public BusinessPlanResponse(String id, String title, String summary, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public BusinessPlanResponse(String id, String title, String summary, String status, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.title = title;
         this.summary = summary;
+        this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -57,5 +59,13 @@ public class BusinessPlanResponse {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
