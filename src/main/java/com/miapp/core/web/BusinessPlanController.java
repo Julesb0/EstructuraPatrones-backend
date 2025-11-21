@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/plans")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173", "https://estructurapatrones-frontend.vercel.app"}, allowCredentials = "true")
 public class BusinessPlanController {
     private final BusinessPlanFacade businessPlanFacade;
 
@@ -61,6 +61,43 @@ public class BusinessPlanController {
             );
             
             return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<BusinessPlanResponse> updatePlan(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable("id") String planId,
+            @RequestBody BusinessPlanRequest request) {
+        try {
+            String userId = extractUserIdFromToken(authHeader);
+            BusinessPlan plan = businessPlanFacade.updateBusinessPlan(userId, planId, request.getTitle(), request.getSummary());
+
+            BusinessPlanResponse response = new BusinessPlanResponse(
+                plan.getId(),
+                plan.getTitle(),
+                plan.getSummary(),
+                plan.getStatus(),
+                plan.getCreatedAt(),
+                plan.getUpdatedAt()
+            );
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePlan(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable("id") String planId) {
+        try {
+            String userId = extractUserIdFromToken(authHeader);
+            businessPlanFacade.deleteBusinessPlan(userId, planId);
+            return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
