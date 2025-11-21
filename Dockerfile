@@ -1,5 +1,5 @@
 # Multi-stage build para optimizar el tamaño de la imagen
-FROM maven:3.9-eclipse-temurin-17 AS build
+FROM maven:3.9-eclipse-temurin-21 AS build
 
 # Establecer directorio de trabajo
 WORKDIR /app
@@ -12,7 +12,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Segunda etapa: imagen de ejecución
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:21-jre-alpine
 
 # Instalar dependencias del sistema
 RUN apk add --no-cache curl
@@ -26,6 +26,9 @@ WORKDIR /app
 # Copiar el JAR de la etapa de construcción
 COPY --from=build /app/target/*.jar app.jar
 
+# Copiar script de inicio
+COPY start-railway.sh start-railway.sh
+
 # Cambiar propietario del directorio
 RUN chown -R appuser:appuser /app
 
@@ -36,4 +39,4 @@ USER appuser
 EXPOSE 8080
 
 # Comando de inicio
-ENTRYPOINT ["java", "-jar", "app.jar"]
+CMD ["java", "-jar", "app.jar"]
