@@ -83,6 +83,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.miapp.SimpleApplication</mainClass>
+                </configuration>
             </plugin>
         </plugins>
     </build>
