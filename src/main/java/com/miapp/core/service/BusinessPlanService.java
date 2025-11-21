@@ -46,7 +46,7 @@ public class BusinessPlanService {
         existingPlan.setSummary(summary);
         existingPlan.setUpdatedAt(LocalDateTime.now());
         
-        return businessPlanRepository.save(existingPlan);
+        return businessPlanRepository.update(existingPlan);
     }
 
     public void deleteBusinessPlan(String userId, String planId) throws Exception {

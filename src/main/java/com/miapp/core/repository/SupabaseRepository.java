@@ -80,6 +80,53 @@ public class SupabaseRepository {
         return null;
     }
 
+    public <T> T update(String tableName, T entity, String id, Class<T> clazz) throws Exception {
+        String url = supabaseProperties.getUrl() + "/rest/v1/" + tableName + "?id=eq." + id;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("apikey", supabaseProperties.getServiceRoleKey());
+        headers.set("Authorization", "Bearer " + supabaseProperties.getServiceRoleKey());
+        headers.set("Prefer", "return=representation");
+
+        String jsonData = objectMapper.writeValueAsString(entity);
+        HttpEntity<String> httpEntity = new HttpEntity<>(jsonData, headers);
+        
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PATCH, httpEntity, String.class);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                JsonNode root = objectMapper.readTree(response.getBody());
+                if (root.size() > 0) {
+                    return convertJsonNodeToObject(root.get(0), clazz);
+                }
+                return null;
+            } else {
+                throw new RuntimeException("Update failed: " + response.getBody());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Update error: " + e.getMessage(), e);
+        }
+    }
+
+    public void deleteById(String tableName, String id) throws Exception {
+        String url = supabaseProperties.getUrl() + "/rest/v1/" + tableName + "?id=eq." + id;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("apikey", supabaseProperties.getServiceRoleKey());
+        headers.set("Authorization", "Bearer " + supabaseProperties.getServiceRoleKey());
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                throw new RuntimeException("Delete failed: " + response.getBody());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Delete error: " + e.getMessage(), e);
+        }
+    }
+
     private <T> T convertJsonNodeToObject(JsonNode node, Class<T> clazz) {
         try {
             Map<String, Object> result = new HashMap<>();

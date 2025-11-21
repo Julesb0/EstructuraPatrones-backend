@@ -29,6 +29,13 @@ public class BusinessPlanRepository {
         return supabaseRepository.save(tablesProperties.getBusinessPlans(), businessPlan, BusinessPlan.class);
     }
 
+    public BusinessPlan update(BusinessPlan businessPlan) throws Exception {
+        if (businessPlan.getId() == null) {
+            throw new Exception("ID is required for update");
+        }
+        return supabaseRepository.update(tablesProperties.getBusinessPlans(), businessPlan, businessPlan.getId(), BusinessPlan.class);
+    }
+
     public void deleteById(String id) throws Exception {
         supabaseRepository.deleteById(tablesProperties.getBusinessPlans(), id);
     }
