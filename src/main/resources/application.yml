@@ -1,0 +1,31 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: entrepreneur-platform
+
+supabase:
+  url: ${SUPABASE_URL:https://test.supabase.co}
+  anonKey: ${SUPABASE_ANON_KEY:test-anon-key}
+  serviceRoleKey: ${SUPABASE_SERVICE_ROLE_KEY:test-service-role-key}
+
+jwt:
+  secret: ${JWT_SECRET:test-jwt-secret-key-1234567890123456789012}
+  expMinutes: 60
+
+platform:
+  tables:
+    profiles: profiles
+    businessPlans: business_plans
+    userColumn: user_id
+
+recaptcha:
+  secretKey: 6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
+  verifyUrl: https://www.google.com/recaptcha/api/siteverify
+  timeout: 5000
+  failOnError: true  # Si hay error de red, rechazar la petición
+
+logging:
+  level:
+    com.miapp: DEBUG
