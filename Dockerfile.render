@@ -1,27 +1,32 @@
-# Dockerfile para Render
-FROM maven:3.8.6-openjdk-17 AS build
+# Dockerfile simplificado para Render
+FROM maven:3.9-eclipse-temurin-21 AS build
 
-# Establecer directorio de trabajo
 WORKDIR /app
-
-# Copiar archivos de configuración de Maven
 COPY pom.xml .
 COPY src ./src
-
-# Construir la aplicación
 RUN mvn clean package -DskipTests
 
-# Segunda etapa - imagen final
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:21-jre-alpine
 
-# Establecer directorio de trabajo
+# Instalar dependencias del sistema
+RUN apk add --no-cache curl
+
+# Crear usuario no-root
+RUN addgroup -g 1001 -S appuser && adduser -S appuser -u 1001
+
 WORKDIR /app
 
-# Copiar el JAR de la etapa de construcción
+# Copiar el JAR
 COPY --from=build /app/target/*.jar app.jar
 
-# Exponer el puerto
+# Cambiar propietario
+RUN chown -R appuser:appuser /app
+
+# Cambiar al usuario no-root
+USER appuser
+
+# Exponer puerto
 EXPOSE 8080
 
-# Comando para ejecutar la aplicación
-CMD ["java", "-jar", "-Dspring.profiles.active=render", "app.jar"]
+# Comando de inicio
+CMD ["java", "-jar", "app.jar"]

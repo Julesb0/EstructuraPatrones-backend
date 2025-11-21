@@ -4,9 +4,10 @@ FROM maven:3.9-eclipse-temurin-21 AS build
 # Establecer directorio de trabajo
 WORKDIR /app
 
-# Copiar archivos de configuración de Maven
+# Copiar archivos de configuración de Maven y el script
 COPY pom.xml .
 COPY src ./src
+COPY start-railway.sh ./start-railway.sh
 
 # Construir la aplicación
 RUN mvn clean package -DskipTests
@@ -26,12 +27,6 @@ WORKDIR /app
 # Copiar el JAR de la etapa de construcción
 COPY --from=build /app/target/*.jar app.jar
 
-# Copiar script de inicio
-COPY start-railway.sh start-railway.sh
-
-# Hacer el script ejecutable
-RUN chmod +x start-railway.sh
-
 # Cambiar propietario del directorio
 RUN chown -R appuser:appuser /app
 
@@ -41,5 +36,5 @@ USER appuser
 # Exponer puerto
 EXPOSE 8080
 
-# Comando de inicio usando el script
-CMD ["./start-railway.sh"]
+# Comando de inicio directo
+CMD ["java", "-jar", "app.jar"]
