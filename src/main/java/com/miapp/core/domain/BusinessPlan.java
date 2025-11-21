@@ -2,6 +2,11 @@ package com.miapp.core.domain;
 
 import java.time.LocalDateTime;
 
+/**
+ * Entidad BusinessPlan con todos los campos necesarios para el CRUD
+ * Incluye status para tracking de estado del plan de negocio
+ * Última actualización: Forzar rebuild en Railway
+ */
 public class BusinessPlan {
     private String id;
     private String userId;
@@ -69,5 +74,13 @@ public class BusinessPlan {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
