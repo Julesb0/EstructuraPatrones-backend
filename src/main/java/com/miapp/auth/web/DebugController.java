@@ -8,7 +8,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/debug")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001", "http://localhost:5173", "https://estructurapatrones-frontend.vercel.app"}, allowCredentials = "true")
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001", "http://localhost:5173", "https://estructura-patrones-frontend-ljgk.vercel.app"}, allowCredentials = "true")
 public class DebugController {
 
     @GetMapping("/ping")
