@@ -29,6 +29,9 @@ COPY --from=build /app/target/*.jar app.jar
 # Copiar script de inicio
 COPY start-railway.sh start-railway.sh
 
+# Hacer el script ejecutable
+RUN chmod +x start-railway.sh
+
 # Cambiar propietario del directorio
 RUN chown -R appuser:appuser /app
 
@@ -38,5 +41,5 @@ USER appuser
 # Exponer puerto
 EXPOSE 8080
 
-# Comando de inicio
-CMD ["java", "-jar", "app.jar"]
+# Comando de inicio usando el script
+CMD ["./start-railway.sh"]
