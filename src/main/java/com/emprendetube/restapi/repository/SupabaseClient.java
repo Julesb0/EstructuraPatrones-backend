@@ -24,16 +24,24 @@ public class SupabaseClient {
     private void initializeConnection() {
         try {
             String url = dotenv.get("SUPABASE_URL");
+            String dbUrl = dotenv.get("SUPABASE_DB_URL");
             String user = dotenv.get("SUPABASE_USER");
             String password = dotenv.get("SUPABASE_PASSWORD");
 
-            if (url == null || user == null || password == null) {
+            if ((url == null && dbUrl == null) || user == null || password == null) {
                 throw new RuntimeException("Missing Supabase configuration in environment variables");
             }
 
-            // Convertir URL de Supabase a formato JDBC PostgreSQL
-            String jdbcUrl = url.replace("https://", "jdbc:postgresql://")
-                    .replace(".supabase.co", ".supabase.co:5432") + "/postgres";
+            String jdbcUrl;
+            if (dbUrl != null && !dbUrl.isEmpty()) {
+                jdbcUrl = dbUrl;
+            } else {
+                String host = url.replace("https://", "").replace("http://", "");
+                if (!host.startsWith("db.")) {
+                    host = "db." + host;
+                }
+                jdbcUrl = "jdbc:postgresql://" + host + ":5432/postgres";
+            }
 
             this.connection = DriverManager.getConnection(jdbcUrl, user, password);
         } catch (Exception e) {

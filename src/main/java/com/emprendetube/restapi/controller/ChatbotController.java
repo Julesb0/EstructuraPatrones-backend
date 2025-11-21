@@ -3,12 +3,12 @@ package com.emprendetube.restapi.controller;
 import com.emprendetube.restapi.chatbot.facade.ChatbotFacade;
 import com.emprendetube.restapi.entity.ChatMessage;
 import com.emprendetube.restapi.entity.ChatMessageCategory;
-import com.emprendetube.restapi.security.JwtUtil;
+import com.miapp.auth.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -22,7 +22,7 @@ public class ChatbotController {
     private ChatbotFacade chatbotFacade;
 
     @Autowired
-    private JwtUtil jwtUtil;
+    private JwtService jwtUtil;
 
     /**
      * Endpoint para enviar un mensaje al chatbot
