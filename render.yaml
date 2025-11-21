@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: estructurapatrones-backend
+    env: java
+    buildCommand: mvn clean package -DskipTests
+    startCommand: java -jar target/*.jar
+    envVars:
+      - key: SUPABASE_URL
+        value: https://jmumjdejdhncycnxgkom.supabase.co
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImptdW1qZGVqZGhuY3ljbnhna29tIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MzY0NjQ3OSwiZXhwIjoyMDc5MjIyNDc5fQ.zc0mJ6XVjJ1p3Q8b5f3zU2f8V7xV5zV5yV3xV5zV5yV3
+      - key: SUPABASE_JWT_SECRET
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImptdW1qZGVqZGhuY3ljbnhna29tIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MzY0NjQ3OSwiZXhwIjoyMDc5MjIyNDc5fQ.zc0mJ6XVjJ1p3Q8b5f3zU2f8V7xV5zV5yV3xV5zV5yV3
+      - key: JWT_SECRET
+        value: mi-super-secreto-jwt-para-firmar-tokens-2024
+      - key: JWT_EXPIRATION
+        value: 86400000
+      - key: RECAPTCHA_SECRET_KEY
+        value: 6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
+      - key: PLATFORM_TABLES_PROFILES
+        value: profiles
+      - key: PLATFORM_TABLES_BUSINESS_PLANS
+        value: business_plans
+      - key: PLATFORM_TABLES_CHAT_MESSAGES
+        value: chat_messages
+      - key: PLATFORM_USER_COLUMN
+        value: user_id
+      - key: SERVER_PORT
+        value: 8080
+      - key: SPRING_PROFILES_ACTIVE
+        value: production
+      - key: PORT
+        value: 8080
