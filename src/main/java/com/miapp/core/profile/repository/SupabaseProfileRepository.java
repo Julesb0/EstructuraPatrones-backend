@@ -1,141 +1,156 @@
 package com.miapp.core.profile.repository;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.miapp.auth.config.SupabaseProperties;
 import com.miapp.core.profile.domain.UserProfile;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Optional;
+import java.util.UUID;
 
-/**
- * Supabase implementation of ProfileRepository using REST API
- */
 @Repository
 public class SupabaseProfileRepository implements ProfileRepository {
+    
+    private final SupabaseProperties supabaseProperties;
+    private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper;
+    private static final String TABLE_NAME = "profiles";
 
-    @Value("${supabase.url}")
-    private String supabaseUrl;
-
-    @Value("${supabase.service-role-key}")
-    private String supabaseServiceKey;
-
-    private final RestTemplate restTemplate = new RestTemplate();
+    public SupabaseProfileRepository(SupabaseProperties supabaseProperties) {
+        this.supabaseProperties = supabaseProperties;
+        this.restTemplate = new RestTemplate();
+        this.objectMapper = new ObjectMapper();
+    }
 
     @Override
-    public Optional<UserProfile> findByUserId(String userId) {
+    public Optional<UserProfile> findByUserId(UUID userId) {
+        String url = supabaseProperties.getUrl() + "/rest/v1/" + TABLE_NAME + "?id=eq." + userId.toString();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("apikey", supabaseProperties.getServiceRoleKey());
+        headers.set("Authorization", "Bearer " + supabaseProperties.getServiceRoleKey());
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        
         try {
-            String url = supabaseUrl + "/rest/v1/profiles?id=eq." + userId;
-            
-            HttpHeaders headers = createHeaders();
-            HttpEntity<String> entity = new HttpEntity<>(headers);
-            
-            ResponseEntity<Map[]> response = restTemplate.exchange(
-                url, HttpMethod.GET, entity, Map[].class);
-            
-            if (response.getBody() != null && response.getBody().length > 0) {
-                Map<String, Object> data = response.getBody()[0];
-                return Optional.of(mapToUserProfile(data));
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                JsonNode root = objectMapper.readTree(response.getBody());
+                if (root.size() > 0) {
+                    UserProfile profile = convertJsonNodeToProfile(root.get(0));
+                    return Optional.of(profile);
+                }
             }
-            return Optional.empty();
         } catch (Exception e) {
-            throw new RuntimeException("Error fetching profile: " + e.getMessage(), e);
+            System.err.println("Error finding profile by userId: " + e.getMessage());
         }
+        return Optional.empty();
     }
 
     @Override
     public UserProfile save(UserProfile profile) {
+        String url = supabaseProperties.getUrl() + "/rest/v1/" + TABLE_NAME;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("apikey", supabaseProperties.getServiceRoleKey());
+        headers.set("Authorization", "Bearer " + supabaseProperties.getServiceRoleKey());
+        headers.set("Prefer", "return=representation");
+
+        // Convertir a formato JSON para Supabase
+        String jsonData = convertProfileToJson(profile);
+        HttpEntity<String> httpEntity = new HttpEntity<>(jsonData, headers);
+        
         try {
-            if (existsByUserId(profile.getUserId())) {
-                return updateProfile(profile);
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                JsonNode root = objectMapper.readTree(response.getBody());
+                if (root.size() > 0) {
+                    return convertJsonNodeToProfile(root.get(0));
+                }
             } else {
-                return createProfile(profile);
+                throw new RuntimeException("Save failed: " + response.getBody());
             }
         } catch (Exception e) {
-            throw new RuntimeException("Error saving profile: " + e.getMessage(), e);
+            throw new RuntimeException("Save error: " + e.getMessage(), e);
         }
+        return profile;
     }
 
     @Override
-    public boolean existsByUserId(String userId) {
+    public UserProfile update(UserProfile profile) {
+        String url = supabaseProperties.getUrl() + "/rest/v1/" + TABLE_NAME + "?id=eq." + profile.getUserId().toString();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("apikey", supabaseProperties.getServiceRoleKey());
+        headers.set("Authorization", "Bearer " + supabaseProperties.getServiceRoleKey());
+        headers.set("Prefer", "return=representation");
+
+        // Solo actualizar los campos que pueden cambiar
+        String jsonData = "{\"full_name\":\"" + profile.getFullName() + "\",\"role\":\"" + profile.getRole() + "\",\"country\":\"" + profile.getCountry() + "\",\"updated_at\":\"" + LocalDateTime.now() + "\"}";
+        HttpEntity<String> httpEntity = new HttpEntity<>(jsonData, headers);
+        
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PATCH, httpEntity, String.class);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                JsonNode root = objectMapper.readTree(response.getBody());
+                if (root.size() > 0) {
+                    return convertJsonNodeToProfile(root.get(0));
+                }
+            } else {
+                throw new RuntimeException("Update failed: " + response.getBody());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Update error: " + e.getMessage(), e);
+        }
+        return profile;
+    }
+
+    @Override
+    public boolean existsByUserId(UUID userId) {
         return findByUserId(userId).isPresent();
     }
 
-    @Override
-    public UserProfile createProfile(String userId, String fullName, String role, String country) {
-        UserProfile profile = new UserProfile(userId, fullName, role, country);
-        return createProfile(profile);
+    private UserProfile convertJsonNodeToProfile(JsonNode node) {
+        try {
+            UserProfile profile = new UserProfile();
+            
+            if (node.has("id") && !node.get("id").isNull()) {
+                profile.setUserId(UUID.fromString(node.get("id").asText()));
+            }
+            
+            if (node.has("full_name") && !node.get("full_name").isNull()) {
+                profile.setFullName(node.get("full_name").asText());
+            }
+            
+            if (node.has("role") && !node.get("role").isNull()) {
+                profile.setRole(node.get("role").asText());
+            }
+            
+            if (node.has("country") && !node.get("country").isNull()) {
+                profile.setCountry(node.get("country").asText());
+            }
+            
+            if (node.has("created_at") && !node.get("created_at").isNull()) {
+                profile.setCreatedAt(LocalDateTime.parse(node.get("created_at").asText().replace(" ", "T")));
+            }
+            
+            if (node.has("updated_at") && !node.get("updated_at").isNull()) {
+                profile.setUpdatedAt(LocalDateTime.parse(node.get("updated_at").asText().replace(" ", "T")));
+            }
+            
+            return profile;
+        } catch (Exception e) {
+            throw new RuntimeException("Error converting JSON to profile: " + e.getMessage(), e);
+        }
     }
 
-    private UserProfile createProfile(UserProfile profile) {
-        String url = supabaseUrl + "/rest/v1/profiles";
-        
-        HttpHeaders headers = createHeaders();
-        headers.set("Prefer", "return=representation");
-        
-        Map<String, Object> data = new HashMap<>();
-        data.put("id", profile.getUserId());
-        data.put("full_name", profile.getFullName());
-        data.put("role", profile.getRole());
-        data.put("country", profile.getCountry());
-        data.put("created_at", profile.getCreatedAt() != null ? profile.getCreatedAt().toString() : LocalDateTime.now().toString());
-        data.put("updated_at", LocalDateTime.now().toString());
-        
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(data, headers);
-        ResponseEntity<Map[]> response = restTemplate.exchange(
-            url, HttpMethod.POST, entity, Map[].class);
-        
-        if (response.getBody() != null && response.getBody().length > 0) {
-            return mapToUserProfile(response.getBody()[0]);
-        }
-        throw new RuntimeException("Failed to create profile");
-    }
-
-    private UserProfile updateProfile(UserProfile profile) {
-        String url = supabaseUrl + "/rest/v1/profiles?id=eq." + profile.getUserId();
-        
-        HttpHeaders headers = createHeaders();
-        headers.set("Prefer", "return=representation");
-        
-        Map<String, Object> data = new HashMap<>();
-        if (profile.getFullName() != null) data.put("full_name", profile.getFullName());
-        if (profile.getRole() != null) data.put("role", profile.getRole());
-        if (profile.getCountry() != null) data.put("country", profile.getCountry());
-        data.put("updated_at", LocalDateTime.now().toString());
-        
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(data, headers);
-        ResponseEntity<Map[]> response = restTemplate.exchange(
-            url, HttpMethod.PATCH, entity, Map[].class);
-        
-        if (response.getBody() != null && response.getBody().length > 0) {
-            return mapToUserProfile(response.getBody()[0]);
-        }
-        throw new RuntimeException("Failed to update profile");
-    }
-
-    private HttpHeaders createHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("apikey", supabaseServiceKey);
-        headers.set("Authorization", "Bearer " + supabaseServiceKey);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return headers;
-    }
-
-    private UserProfile mapToUserProfile(Map<String, Object> data) {
-        UserProfile profile = new UserProfile();
-        profile.setUserId((String) data.get("id"));
-        profile.setFullName((String) data.get("full_name"));
-        profile.setRole((String) data.get("role"));
-        profile.setCountry((String) data.get("country"));
-        
-        if (data.get("created_at") != null) {
-            profile.setCreatedAt(LocalDateTime.parse((String) data.get("created_at")));
-        }
-        if (data.get("updated_at") != null) {
-            profile.setUpdatedAt(LocalDateTime.parse((String) data.get("updated_at")));
-        }
-        
-        return profile;
+    private String convertProfileToJson(UserProfile profile) {
+        return "{\"id\":\"" + profile.getUserId() + "\",\"full_name\":\"" + profile.getFullName() + "\",\"role\":\"" + profile.getRole() + "\",\"country\":\"" + profile.getCountry() + "\",\"created_at\":\"" + profile.getCreatedAt() + "\",\"updated_at\":\"" + profile.getUpdatedAt() + "\"}";
     }
 }

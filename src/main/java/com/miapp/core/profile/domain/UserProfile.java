@@ -1,22 +1,20 @@
 package com.miapp.core.profile.domain;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
-/**
- * UserProfile entity representing entrepreneur profiles
- * Maps to the 'profiles' table in Supabase
- */
 public class UserProfile {
-    private String userId;      // UUID, references auth.users(id)
-    private String fullName;    // User's full name
-    private String role;        // ENTREPRENEUR, MENTOR, INVESTOR, ADMIN
-    private String country;     // User's country
+    private UUID userId;
+    private String fullName;
+    private String role;
+    private String country;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public UserProfile() {}
+    public UserProfile() {
+    }
 
-    public UserProfile(String userId, String fullName, String role, String country) {
+    public UserProfile(UUID userId, String fullName, String role, String country) {
         this.userId = userId;
         this.fullName = fullName;
         this.role = role;
@@ -25,12 +23,11 @@ public class UserProfile {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // Getters and Setters
-    public String getUserId() {
+    public UUID getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(UUID userId) {
         this.userId = userId;
     }
 
@@ -72,17 +69,5 @@ public class UserProfile {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    @Override
-    public String toString() {
-        return "UserProfile{" +
-                "userId='" + userId + '\'' +
-                ", fullName='" + fullName + '\'' +
-                ", role='" + role + '\'' +
-                ", country='" + country + '\'' +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
     }
 }

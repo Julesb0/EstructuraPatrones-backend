@@ -3,22 +3,21 @@ package com.miapp.core.profile.web;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-/**
- * DTO for profile update requests
- */
 public class ProfileUpdateRequest {
     
-    @NotBlank(message = "Full name is required")
-    @Size(min = 2, max = 100, message = "Full name must be between 2 and 100 characters")
+    @NotBlank(message = "El nombre completo es obligatorio")
+    @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres")
     private String fullName;
     
-    @NotBlank(message = "Role is required")
-    private String role; // ENTREPRENEUR, MENTOR, INVESTOR, ADMIN
+    @NotBlank(message = "El rol es obligatorio")
+    private String role;
     
-    @Size(max = 50, message = "Country name must not exceed 50 characters")
+    @NotBlank(message = "El país es obligatorio")
+    @Size(min = 2, max = 50, message = "El país debe tener entre 2 y 50 caracteres")
     private String country;
 
-    public ProfileUpdateRequest() {}
+    public ProfileUpdateRequest() {
+    }
 
     public ProfileUpdateRequest(String fullName, String role, String country) {
         this.fullName = fullName;
@@ -26,7 +25,6 @@ public class ProfileUpdateRequest {
         this.country = country;
     }
 
-    // Getters and Setters
     public String getFullName() {
         return fullName;
     }
@@ -49,14 +47,5 @@ public class ProfileUpdateRequest {
 
     public void setCountry(String country) {
         this.country = country;
-    }
-
-    @Override
-    public String toString() {
-        return "ProfileUpdateRequest{" +
-                "fullName='" + fullName + '\'' +
-                ", role='" + role + '\'' +
-                ", country='" + country + '\'' +
-                '}';
     }
 }

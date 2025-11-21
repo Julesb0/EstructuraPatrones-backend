@@ -1,36 +1,35 @@
 package com.miapp.core.profile.web;
 
-import java.time.LocalDateTime;
+import com.miapp.core.profile.domain.UserProfile;
 
-/**
- * DTO for profile responses
- */
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 public class ProfileResponse {
-    private String userId;
+    private UUID userId;
     private String fullName;
     private String role;
     private String country;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public ProfileResponse() {}
-
-    public ProfileResponse(String userId, String fullName, String role, String country, 
-                          LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.userId = userId;
-        this.fullName = fullName;
-        this.role = role;
-        this.country = country;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+    public ProfileResponse() {
     }
 
-    // Getters and Setters
-    public String getUserId() {
+    public ProfileResponse(UserProfile profile) {
+        this.userId = profile.getUserId();
+        this.fullName = profile.getFullName();
+        this.role = profile.getRole();
+        this.country = profile.getCountry();
+        this.createdAt = profile.getCreatedAt();
+        this.updatedAt = profile.getUpdatedAt();
+    }
+
+    public UUID getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(UUID userId) {
         this.userId = userId;
     }
 
@@ -72,17 +71,5 @@ public class ProfileResponse {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    @Override
-    public String toString() {
-        return "ProfileResponse{" +
-                "userId='" + userId + '\'' +
-                ", fullName='" + fullName + '\'' +
-                ", role='" + role + '\'' +
-                ", country='" + country + '\'' +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
     }
 }

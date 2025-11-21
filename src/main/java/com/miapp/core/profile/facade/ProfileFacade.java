@@ -7,13 +7,12 @@ import com.miapp.core.profile.web.ProfileUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-/**
- * ProfileFacade following the Facade pattern
- * Orchestrates profile-related operations and validations
- */
+import java.util.Optional;
+import java.util.UUID;
+
 @Component
 public class ProfileFacade {
-
+    
     private final ProfileService profileService;
 
     @Autowired
@@ -21,101 +20,66 @@ public class ProfileFacade {
         this.profileService = profileService;
     }
 
-    /**
-     * Get current user's profile with validation
-     * @param userId the user ID from JWT
-     * @return ProfileResponse or null if not found
-     */
-    public ProfileResponse getCurrentUserProfile(String userId) {
-        validateUserId(userId);
+    public Optional<ProfileResponse> getCurrentUserProfile(UUID userId) {
+        // Validaciones de negocio
+        if (userId == null) {
+            throw new IllegalArgumentException("El ID de usuario no puede ser nulo");
+        }
+
+        Optional<UserProfile> profile = profileService.getCurrentUserProfile(userId);
         
-        UserProfile profile = profileService.getCurrentUserProfile(userId);
-        if (profile == null) {
-            return null;
+        if (profile.isPresent()) {
+            return Optional.of(new ProfileResponse(profile.get()));
         }
         
-        return convertToResponse(profile);
+        return Optional.empty();
     }
 
-    /**
-     * Update current user's profile with validation
-     * @param userId the user ID from JWT
-     * @param updateRequest the update request
-     * @return updated ProfileResponse
-     * @throws IllegalArgumentException if validation fails
-     */
-    public ProfileResponse updateProfile(String userId, ProfileUpdateRequest updateRequest) {
-        validateUserId(userId);
-        validateUpdateRequest(updateRequest);
+    public ProfileResponse updateProfile(UUID userId, ProfileUpdateRequest updateRequest) {
+        // Validaciones de negocio
+        if (userId == null) {
+            throw new IllegalArgumentException("El ID de usuario no puede ser nulo");
+        }
         
+        if (updateRequest == null) {
+            throw new IllegalArgumentException("Los datos de actualización no pueden ser nulos");
+        }
+
+        // Validar rol
+        validateRole(updateRequest.getRole());
+        
+        // Actualizar perfil a través del servicio
         UserProfile updatedProfile = profileService.updateProfile(userId, updateRequest);
-        if (updatedProfile == null) {
-            throw new RuntimeException("Failed to update profile");
-        }
         
-        return convertToResponse(updatedProfile);
+        // Convertir a respuesta
+        return new ProfileResponse(updatedProfile);
     }
 
-    /**
-     * Create a new profile for a user
-     * @param userId the user ID
-     * @param fullName the full name
-     * @param role the role
-     * @param country the country
-     * @return created ProfileResponse
-     */
-    public ProfileResponse createProfile(String userId, String fullName, String role, String country) {
-        validateUserId(userId);
-        
-        if (fullName == null || fullName.trim().isEmpty()) {
-            throw new IllegalArgumentException("Full name is required");
-        }
+    private void validateRole(String role) {
         if (role == null || role.trim().isEmpty()) {
-            throw new IllegalArgumentException("Role is required");
-        }
-        if (!profileService.isValidRole(role)) {
-            throw new IllegalArgumentException("Invalid role. Must be one of: ENTREPRENEUR, MENTOR, INVESTOR, ADMIN");
+            throw new IllegalArgumentException("El rol no puede estar vacío");
         }
         
-        UserProfile profile = profileService.createProfile(userId, fullName, role, country);
-        return convertToResponse(profile);
-    }
-
-    /**
-     * Check if user has a specific role
-     * @param userId the user ID
-     * @param role the role to check
-     * @return true if user has the role
-     */
-    public boolean hasRole(String userId, String role) {
-        validateUserId(userId);
-        return profileService.hasRole(userId, role);
-    }
-
-    private void validateUserId(String userId) {
-        if (userId == null || userId.trim().isEmpty()) {
-            throw new IllegalArgumentException("User ID is required");
-        }
-    }
-
-    private void validateUpdateRequest(ProfileUpdateRequest request) {
-        if (request == null) {
-            throw new IllegalArgumentException("Update request is required");
+        // Validar que el rol sea uno de los permitidos
+        String[] validRoles = {"ENTREPRENEUR", "MENTOR", "INVESTOR", "ADMIN"};
+        boolean isValidRole = false;
+        
+        for (String validRole : validRoles) {
+            if (validRole.equals(role.toUpperCase())) {
+                isValidRole = true;
+                break;
+            }
         }
         
-        if (request.getRole() != null && !profileService.isValidRole(request.getRole())) {
-            throw new IllegalArgumentException("Invalid role. Must be one of: ENTREPRENEUR, MENTOR, INVESTOR, ADMIN");
+        if (!isValidRole) {
+            throw new IllegalArgumentException("Rol inválido. Los roles permitidos son: ENTREPRENEUR, MENTOR, INVESTOR, ADMIN");
         }
     }
 
-    private ProfileResponse convertToResponse(UserProfile profile) {
-        ProfileResponse response = new ProfileResponse();
-        response.setUserId(profile.getUserId());
-        response.setFullName(profile.getFullName());
-        response.setRole(profile.getRole());
-        response.setCountry(profile.getCountry());
-        response.setCreatedAt(profile.getCreatedAt());
-        response.setUpdatedAt(profile.getUpdatedAt());
-        return response;
+    public boolean profileExists(UUID userId) {
+        if (userId == null) {
+            return false;
+        }
+        return profileService.profileExists(userId);
     }
 }
