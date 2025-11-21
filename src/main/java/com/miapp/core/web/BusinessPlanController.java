@@ -103,43 +103,6 @@ public class BusinessPlanController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<BusinessPlanResponse> updatePlan(
-            @RequestHeader("Authorization") String authHeader,
-            @PathVariable String id,
-            @RequestBody BusinessPlanRequest request) {
-        try {
-            String userId = extractUserIdFromToken(authHeader);
-            BusinessPlan plan = businessPlanFacade.updateBusinessPlan(userId, id, request.getTitle(), request.getSummary());
-            
-            BusinessPlanResponse response = new BusinessPlanResponse(
-                plan.getId(),
-                plan.getTitle(),
-                plan.getSummary(),
-                plan.getStatus(),
-                plan.getCreatedAt(),
-                plan.getUpdatedAt()
-            );
-            
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePlan(
-            @RequestHeader("Authorization") String authHeader,
-            @PathVariable String id) {
-        try {
-            String userId = extractUserIdFromToken(authHeader);
-            businessPlanFacade.deleteBusinessPlan(id, userId);
-            return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
     private String extractUserIdFromToken(String authHeader) {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
