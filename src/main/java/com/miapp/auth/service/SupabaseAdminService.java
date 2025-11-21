@@ -16,9 +16,9 @@ public class SupabaseAdminService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
-    public SupabaseAdminService(SupabaseProperties supabaseProperties) {
+    public SupabaseAdminService(SupabaseProperties supabaseProperties, RestTemplate restTemplate) {
         this.supabaseProperties = supabaseProperties;
-        this.restTemplate = new RestTemplate();
+        this.restTemplate = restTemplate;
         this.objectMapper = new ObjectMapper();
     }
 

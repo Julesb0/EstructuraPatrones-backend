@@ -17,9 +17,9 @@ public class SupabaseAuthService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
-    public SupabaseAuthService(SupabaseProperties supabaseProperties) {
+    public SupabaseAuthService(SupabaseProperties supabaseProperties, RestTemplate restTemplate) {
         this.supabaseProperties = supabaseProperties;
-        this.restTemplate = new RestTemplate();
+        this.restTemplate = restTemplate;
         this.objectMapper = new ObjectMapper();
     }
 
