@@ -1,35 +1,52 @@
 server:
-  port: ${PORT:8080}
-
-spring:
-  application:
-    name: entrepreneur-platform
+  port: ${PORT:8081}
 
 supabase:
-  url: ${SUPABASE_URL:https://test.supabase.co}
-  anonKey: ${SUPABASE_ANON_KEY:test-anon-key}
-  serviceRoleKey: ${SUPABASE_SERVICE_ROLE_KEY:test-service-role-key}
+  url: ${SUPABASE_URL:}
+  anonKey: ${SUPABASE_ANON_KEY:}
+  serviceRoleKey: ${SUPABASE_SERVICE_ROLE_KEY:}
+
+spring:
+  jackson:
+    serialization:
+      INDENT_OUTPUT: true
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:prod}
 
 jwt:
-  secret: ${JWT_SECRET:test-jwt-secret-key-1234567890123456789012}
-  expMinutes: 60
+  secret: ${JWT_SECRET:change-me-in-dev}
+  expMinutes: ${JWT_EXP_MINUTES:60}
 
-platform:
+finance:
   tables:
-    profiles: profiles
-    businessPlans: business_plans
-    userColumn: user_id
+    income: ${FINANCE_TABLE_INCOME:ingresos}
+    expenses: ${FINANCE_TABLE_EXPENSES:gastos}
+    micro: ${FINANCE_TABLE_MICRO:microgastos}
+    userColumn: ${FINANCE_TABLE_USER_COL:user_id}
 
-recaptcha:
-  secretKey: 6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
-  verifyUrl: https://www.google.com/recaptcha/api/siteverify
-  timeout: 5000
-  failOnError: true  # Si hay error de red, rechazar la petición
+ai:
+  apiUrl: ${AI_API_URL:}
+  apiKey: ${AI_API_KEY:}
+  model: ${AI_MODEL:}
+  referer: ${AI_REFERER:}
+  title: ${AI_TITLE:}
+
+market:
+  meliSite: ${MELI_SITE:}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
 
 logging:
   level:
-    com.miapp: DEBUG
-
-cors:
-  allowed:
-    origins: ${CORS_ORIGINS:http://localhost:3000,http://localhost:5173}
+    com.example: INFO
+    org.springframework.web: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

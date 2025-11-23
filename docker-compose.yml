@@ -1,17 +1,26 @@
-version: '3.8'
-
 services:
   backend:
-    build: .
+    build:
+      context: ./backend
+    image: finmarket-backend:latest
+    container_name: finmarket-backend
     ports:
       - "8080:8080"
+    env_file:
+      - backend/.env
     environment:
-      - SUPABASE_URL=https://jmumjdejdhncycnxgkom.supabase.co
-      - SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImptdW1qZGVqZGhuY3ljbnhna29tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2NDY0NzksImV4cCI6MjA3OTIyMjQ3OX0.Co1vLYDB8zFNT420HBc8Deqb7i9kzuznfRuIiYBwa14
-      - SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImptdW1qZGVqZGhuY3ljbnhna29tIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MzY0NjQ3OSwiZXhwIjoyMDc5MjIyNDc5fQ.2cVSvlJTD7FNkK9tSeEWhE82WEZgU6m1-3nx61OTFg0
-      - SUPABASE_DB_URL=jdbc:postgresql://db.jmumjdejdhncycnxgkom.supabase.co:5432/postgres
-      - SUPABASE_USER=postgres
-      - SUPABASE_PASSWORD=YDSbBYDMOfS19mtU
-      - JWT_SECRET=xZpmvBNQVl1yagtr3wkGuDbDdiJ3LpTyW+LrThZ/j3UdIdPWPnkid4tjmBVjH7y1EMu7QH55zP/fCwnvR2lFuA==
-      - CORS_ORIGINS=http://localhost:3000,https://estructurapatrones-frontend.vercel.app
-      - PORT=8080
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-prod}
+      JWT_EXP_MINUTES: ${JWT_EXP_MINUTES:-60}
+      SUPABASE_URL: ${SUPABASE_URL:-}
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:-}
+      SUPABASE_SERVICE_ROLE: ${SUPABASE_SERVICE_ROLE:-}
+      AI_API_URL: ${AI_API_URL:-}
+      AI_API_KEY: ${AI_API_KEY:-}
+      AI_MODEL: ${AI_MODEL:-}
+      AI_REFERER: ${AI_REFERER:-}
+      AI_TITLE: ${AI_TITLE:-}
+      FINANCE_TABLE_INCOME: ${FINANCE_TABLE_INCOME:-ingresos}
+      FINANCE_TABLE_EXPENSES: ${FINANCE_TABLE_EXPENSES:-gastos}
+      FINANCE_TABLE_MICRO: ${FINANCE_TABLE_MICRO:-microgastos}
+      FINANCE_TABLE_USER_COL: ${FINANCE_TABLE_USER_COL:-user_id}
+    restart: unless-stopped

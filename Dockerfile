@@ -1,40 +1,31 @@
-# Multi-stage build para optimizar el tamaño de la imagen
-FROM maven:3.9-eclipse-temurin-21 AS build
+# Usar imagen base de Eclipse Temurin (OpenJDK 17) con Maven
+FROM maven:3.9-eclipse-temurin-17 as build
 
 # Establecer directorio de trabajo
 WORKDIR /app
 
-# Copiar archivos de configuración de Maven y el script
+# Copiar archivos de configuración de Maven
 COPY pom.xml .
 COPY src ./src
-COPY start-railway.sh ./start-railway.sh
 
-# Construir la aplicación
+# Construir el proyecto con Maven
 RUN mvn clean package -DskipTests
 
-# Segunda etapa: imagen de ejecución
-FROM eclipse-temurin:21-jre-alpine
-
-# Instalar dependencias del sistema
-RUN apk add --no-cache curl
-
-# Crear usuario no-root para seguridad
-RUN addgroup -g 1001 -S appuser && adduser -S appuser -u 1001
+# Segunda etapa para la imagen final
+FROM eclipse-temurin:17-jre-jammy
 
 # Establecer directorio de trabajo
 WORKDIR /app
 
-# Copiar el JAR de la etapa de construcción
-COPY --from=build /app/target/*.jar app.jar
+# Copiar el archivo JAR desde la etapa de construcción
+COPY --from=build /app/target/supabase-auth-java-0.0.1-SNAPSHOT.jar app.jar
 
-# Cambiar propietario del directorio
-RUN chown -R appuser:appuser /app
+# Exponer el puerto (Render asigna el puerto dinámicamente)
+EXPOSE 8081
 
-# Cambiar al usuario no-root
-USER appuser
+# Variables de entorno para producción
+ENV JAVA_OPTS="-Xmx512m -Xms256m"
+ENV SPRING_PROFILES_ACTIVE=prod
 
-# Exponer puerto
-EXPOSE 8080
-
-# Comando de inicio directo
-CMD ["java", "-jar", "app.jar"]
+# Comando para ejecutar la aplicación
+CMD ["sh", "-c", "java $JAVA_OPTS -Dserver.port=$PORT -jar app.jar"]
